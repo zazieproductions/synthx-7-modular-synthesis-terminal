@@ -179,9 +179,18 @@ prints a path you can pass via `PLAYWRIGHT_EXECUTABLE_PATH`.
 ## Deployment
 
 The site is a fully static bundle and deploys to **GitHub Pages** via
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Vite uses a
-relative `base` (`./`) so the same build works from the repository root, any
-sub-path preview, or the Pages project site.
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) on every push to
+`main`. Vite uses a relative `base` (`./`) so the same build works from the
+repository root, any sub-path preview, or the Pages project site
+(`https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/`).
+
+> **One-time setup** — before the live-demo link resolves, GitHub Pages has to
+> be enabled on the repository:
+>
+> 1. Open **Settings → Pages** on the repository.
+> 2. Under **Build and deployment → Source**, select **GitHub Actions**.
+>
+> After that, every push to `main` publishes the live demo automatically.
 
 To deploy anywhere else, drop the contents of `dist/` on any static file host.
 
