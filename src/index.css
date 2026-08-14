@@ -1,4 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/* Self-hosted fonts — no external requests, works offline. */
+@import '@fontsource/jetbrains-mono/300.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/700.css';
+@import '@fontsource/share-tech-mono/400.css';
 
 :root {
   --neon-green: #00ff41;
@@ -55,7 +62,7 @@ body::after {
 }
 
 /* Range input styling */
-input[type="range"] {
+input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
@@ -63,13 +70,13 @@ input[type="range"] {
   height: 20px;
 }
 
-input[type="range"]::-webkit-slider-track {
+input[type='range']::-webkit-slider-track {
   height: 3px;
   background: #1a1a2e;
   border-radius: 2px;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 14px;
@@ -80,14 +87,14 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
 }
 
-input[type="range"]::-moz-range-track {
+input[type='range']::-moz-range-track {
   height: 3px;
   background: #1a1a2e;
   border-radius: 2px;
   border: none;
 }
 
-input[type="range"]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
   width: 14px;
   height: 14px;
   background: var(--neon-green);
@@ -96,7 +103,7 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
 }
 
-/* Select styling */
+/* Select styling (kept for future dropdowns) */
 select {
   -webkit-appearance: none;
   appearance: none;
@@ -106,33 +113,77 @@ select {
   padding-right: 24px;
 }
 
-/* Glitch animation */
-@keyframes glitch {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-  100% { transform: translate(0); }
+/* Keyboard key styling */
+.synth-key {
+  transition: all 0.05s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+.synth-key:active,
+.synth-key.active {
+  transform: scale(0.95);
+  filter: brightness(1.5);
+}
+
+/* Panel glow borders */
+.panel-glow {
+  box-shadow:
+    inset 0 0 20px rgba(0, 255, 65, 0.03),
+    0 0 1px rgba(0, 255, 65, 0.2);
+}
+.panel-glow-pink {
+  box-shadow:
+    inset 0 0 20px rgba(255, 0, 102, 0.03),
+    0 0 1px rgba(255, 0, 102, 0.2);
+}
+.panel-glow-cyan {
+  box-shadow:
+    inset 0 0 20px rgba(0, 229, 255, 0.03),
+    0 0 1px rgba(0, 229, 255, 0.2);
+}
+.panel-glow-amber {
+  box-shadow:
+    inset 0 0 20px rgba(255, 170, 0, 0.03),
+    0 0 1px rgba(255, 170, 0, 0.2);
+}
+
+/* Visible keyboard focus for all interactive elements. */
+:focus-visible {
+  outline: 2px solid rgba(0, 255, 65, 0.6);
+  outline-offset: 2px;
 }
 
 @keyframes flicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.8; }
-  94% { opacity: 1; }
-  96% { opacity: 0.9; }
-  97% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.8;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.9;
+  }
+  97% {
+    opacity: 1;
+  }
 }
 
-@keyframes scan {
-  0% { top: -5%; }
-  100% { top: 105%; }
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .animate-flicker {
@@ -143,31 +194,14 @@ select {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Keyboard key styling */
-.synth-key {
-  transition: all 0.05s ease;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.synth-key:active, .synth-key.active {
-  transform: scale(0.95);
-  filter: brightness(1.5);
-}
-
-/* Panel glow border */
-.panel-glow {
-  box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.03), 0 0 1px rgba(0, 255, 65, 0.2);
-}
-
-.panel-glow-pink {
-  box-shadow: inset 0 0 20px rgba(255, 0, 102, 0.03), 0 0 1px rgba(255, 0, 102, 0.2);
-}
-
-.panel-glow-cyan {
-  box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.03), 0 0 1px rgba(0, 229, 255, 0.2);
-}
-
-.panel-glow-amber {
-  box-shadow: inset 0 0 20px rgba(255, 170, 0, 0.03), 0 0 1px rgba(255, 170, 0, 0.2);
+/* Honour the user's reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

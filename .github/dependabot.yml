@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    versioning-strategy: increase
+    labels:
+      - dependencies
+    groups:
+      production:
+        dependency-type: production
+      development:
+        dependency-type: development
+    ignore:
+      # @sparticuz/chromium tracks Chromium releases rather than SemVer, so
+      # automated bumps are noise. Update it deliberately when the offline
+      # screenshot tooling needs a newer build.
+      - dependency-name: '@sparticuz/chromium'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies

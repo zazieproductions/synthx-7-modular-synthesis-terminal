@@ -1,0 +1,10 @@
+dist
+coverage
+node_modules
+playwright-report
+test-results
+package-lock.json
+CHANGELOG.md
+docs
+public/screenshots
+public/og-image.png

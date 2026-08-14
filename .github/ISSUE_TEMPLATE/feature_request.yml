@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest an idea for SYNTHX-7.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We welcome feature ideas. Please check the roadmap in the README and
+        existing issues first to avoid duplicates.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem would this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the feature or change you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Any alternative approaches you have considered.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true
