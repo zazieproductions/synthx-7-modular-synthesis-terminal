@@ -1,16 +1,37 @@
-# SYNTHX-7 · Modular Synthesis Terminal
+# AGON // Signal Engine
 
-> A dual-oscillator subtractive synthesizer that runs entirely in your browser — built with **React**, **TypeScript**, **Vite**, and the **Web Audio API**.
+> A cybernetic browser synthesizer and audiovisual signal laboratory built with **React**, **TypeScript**, **Canvas**, and the **Web Audio API**. Live demo available.
 
-**▶ [Launch the live demo](https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/)**
+[![AGON // Signal Engine interface](docs/images/agon-signal-engine-preview.png)](https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/)
 
-![SYNTHX-7 synthesizer interface](docs/images/synthx-7-interface.png)
+[![Launch AGON // Signal Engine](https://img.shields.io/badge/▶_Launch-AGON_%2F%2F_Signal_Engine-00ff41?style=for-the-badge&logo=github&logoColor=white&labelColor=0a0a0f&color=00ff41)](https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/)
 
-SYNTHX-7 is a playful, terminal-styled take on a hardware modular synth. Two oscillators feed a resonant filter and an ADSR envelope, then pass through delay, reverb, distortion, and an LFO before hitting a soft limiter. Everything runs in real time with zero backend — just a static site and your browser's audio engine.
-
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](.nvmrc)
+[![React 19](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=white&labelColor=0a0a0f)](https://react.dev)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white&labelColor=0a0a0f)](https://www.typescriptlang.org)
+[![Canvas API](https://img.shields.io/badge/Canvas-API-00e5ff?style=flat-square&labelColor=0a0a0f)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+[![Web Audio API](https://img.shields.io/badge/Web_Audio-API-ff0066?style=flat-square&labelColor=0a0a0f)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+[![Vite 7](https://img.shields.io/badge/Vite-7-646cff?style=flat-square&logo=vite&logoColor=white&labelColor=0a0a0f)](https://vite.dev)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white&labelColor=0a0a0f)](https://tailwindcss.com)
 [![CI](https://github.com/zazieproductions/synthx-7-modular-synthesis-terminal/actions/workflows/ci.yml/badge.svg)](https://github.com/zazieproductions/synthx-7-modular-synthesis-terminal/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-00ff41?style=flat-square&labelColor=0a0a0f)](LICENSE)
+
+> ⚠️ **VOLUME WARNING** — this instrument is not polite. It can get **loud**. Turn your speakers down before you hit the launch button; the soft limiter will not save your ears from your own curiosity.
+
+AGON // Signal Engine is the current form of the SYNTHX-7 modular synthesis terminal: a playful, terminal-styled impersonation of a hardware modular synth. Two oscillators feed a resonant filter and an ADSR envelope, then pass through delay, reverb, distortion, and an LFO before hitting a soft limiter. Everything runs in real time with zero backend — just a static site and your browser's audio engine.
+
+---
+
+## Live Demo
+
+AGON // Signal Engine is a **browser-based audiovisual synthesizer** built with **React, TypeScript, Canvas, and the Web Audio API**. No install, no backend, no samples to download — open it, press the **INITIALIZE AUDIO ENGINE** button, and the machine wakes up and starts drawing its own signal.
+
+Because browsers enforce autoplay policies, **audio begins only after you interact with the page**. That first click is the required user gesture that unlocks the Web Audio engine — nothing plays until you touch it.
+
+▶ **Run it now: [Launch AGON // Signal Engine](https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/)**
+
+The deployed site is rebuilt automatically from `main` by [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) and served from GitHub Pages at:
+
+`https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/`
 
 ---
 
@@ -36,6 +57,7 @@ SYNTHX-7 is a playful, terminal-styled take on a hardware modular synth. Two osc
 | Language | TypeScript 5 (strict)                                 |
 | Build    | Vite 7                                                |
 | Audio    | Web Audio API (no runtime audio dependency)           |
+| Canvas   | Oscilloscope, spectrum, spectrogram, level meter      |
 | Testing  | Vitest, React Testing Library, Playwright             |
 | Linting  | ESLint 9 (type-aware), Prettier, EditorConfig         |
 | CI/CD    | GitHub Actions (quality checks + GitHub Pages deploy) |
@@ -166,11 +188,13 @@ npx playwright install chromium   # one-time browser download
 npm run e2e
 ```
 
-The README screenshots are generated from the running app (never mocked):
+The README screenshot and the social-preview artwork are generated from the running app (never mocked):
 
 ```bash
 npm run build && node scripts/capture-screenshots.mjs
 ```
+
+This writes `docs/images/agon-signal-engine-preview.png` (1920×1080, full interface with live signal), `docs/images/agon-social-preview.png` (1280×640 social-preview artwork), and `public/og-image.png`.
 
 In restricted-network environments where the Playwright CDN is unreachable,
 `scripts/ensure-chromium.mjs` extracts an npm-packaged Chromium build and
@@ -179,20 +203,30 @@ prints a path you can pass via `PLAYWRIGHT_EXECUTABLE_PATH`.
 ## Deployment
 
 The site is a fully static bundle and deploys to **GitHub Pages** via
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) on every push to
-`main`. Vite uses a relative `base` (`./`) so the same build works from the
-repository root, any sub-path preview, or the Pages project site
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) on every push to `main`. Vite uses a
+relative `base` (`./`) so the same build works from the repository root, any
+sub-path preview, or the Pages project site
 (`https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/`).
 
 > **One-time setup** — before the live-demo link resolves, GitHub Pages has to
-> be enabled on the repository:
+> be enabled on the repository and the two workflow files added
+> (`.github/workflows/deploy.yml` and `.github/workflows/ci.yml`):
 >
-> 1. Open **Settings → Pages** on the repository.
-> 2. Under **Build and deployment → Source**, select **GitHub Actions**.
+> 1. Add the workflows from this repository's `.github/workflows/` directory.
+> 2. Open **Settings → Pages** on the repository.
+> 3. Under **Build and deployment → Source**, select **GitHub Actions**.
 >
 > After that, every push to `main` publishes the live demo automatically.
 
 To deploy anywhere else, drop the contents of `dist/` on any static file host.
+
+### Social preview
+
+The repository's social-preview artwork (`docs/images/agon-social-preview.png`, 1280×640) ships in this repo, but GitHub does not read it automatically from the repository tree. It must be uploaded **once, manually**, through:
+
+`Repository Settings → General → Social preview`
+
+and set to `docs/images/agon-social-preview.png`. (The deployed site's Open Graph image, `public/og-image.png`, is the same artwork and is picked up automatically by the build.)
 
 ## Browser limitations
 
@@ -217,4 +251,4 @@ Security issues should be reported as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-[MIT](LICENSE) © SYNTHX-7 contributors
+[MIT](LICENSE) © AGON // Signal Engine contributors (SYNTHX-7)
