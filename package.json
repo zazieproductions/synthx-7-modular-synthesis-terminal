@@ -1,7 +1,7 @@
 {
   "name": "synthx-7",
   "version": "1.0.0",
-  "description": "SYNTHX-7 — an interactive modular synthesis terminal for the browser, built with React, TypeScript, Vite, and the Web Audio API.",
+  "description": "AGON // Signal Engine — a cybernetic browser synthesizer and audiovisual signal laboratory built with React, TypeScript, Canvas, and the Web Audio API. Live demo available.",
   "type": "module",
   "license": "MIT",
   "homepage": "https://zazieproductions.github.io/synthx-7-modular-synthesis-terminal/",
