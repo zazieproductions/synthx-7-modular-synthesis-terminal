@@ -1,102 +1,187 @@
-import { useState, useCallback } from 'react';
+/**
+ * Reusable rotary control.
+ *
+ * Fully keyboard-operable (arrow keys, page up/down, Home/End), exposes
+ * `role="slider"` with numeric ARIA state for assistive tech, and supports
+ * pointer drag plus double-click-to-reset.
+ */
+import { useCallback, useRef, useState } from 'react';
+import type { KeyboardEvent, PointerEvent } from 'react';
+import { clamp, roundToStep } from '../utils/math';
+import { formatValue } from '../utils/format';
 
-interface Props {
+interface ControlKnobProps {
   label: string;
   value: number;
   min: number;
   max: number;
-  step?: number;
+  step: number;
   unit?: string;
-  color?: string;
-  onChange: (v: number) => void;
+  color: string;
+  defaultValue?: number;
+  onChange: (value: number) => void;
 }
 
-export function ControlKnob({ label, value, min, max, step = 0.01, unit = '', color = '#00ff41', onChange }: Props) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [startY, setStartY] = useState(0);
-  const [startValue, setStartValue] = useState(0);
+/** Normalise a value into a 0..100 percentage for the arc. */
+function toPercent(value: number, min: number, max: number): number {
+  if (max <= min) return 0;
+  return clamp(((value - min) / (max - min)) * 100, 0, 100);
+}
 
-  const percent = ((value - min) / (max - min)) * 100;
-  const angle = (percent / 100) * 270 - 135;
+export function ControlKnob({
+  label,
+  value,
+  min,
+  max,
+  step,
+  unit = '',
+  color,
+  defaultValue,
+  onChange,
+}: ControlKnobProps) {
+  const [dragging, setDragging] = useState(false);
+  const dragState = useRef<{ startY: number; startValue: number } | null>(null);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-    setStartY(e.clientY);
-    setStartValue(value);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  }, [value]);
+  const percent = toPercent(value, min, max);
+  const angle = -135 + (percent / 100) * 270;
+  const range = max - min;
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging) return;
-    const delta = startY - e.clientY;
-    const range = max - min;
-    const sensitivity = range / 100;
-    let newValue = startValue + delta * sensitivity;
-    newValue = Math.max(min, Math.min(max, newValue));
-    newValue = Math.round(newValue / step) * step;
-    onChange(newValue);
-  }, [isDragging, startY, startValue, min, max, step, onChange]);
+  const commit = useCallback(
+    (next: number) => {
+      onChange(roundToStep(clamp(next, min, max), step, min, max));
+    },
+    [onChange, min, max, step],
+  );
 
-  const handlePointerUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    dragState.current = { startY: event.clientY, startValue: value };
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
 
-  const displayValue = step >= 1 ? Math.round(value) : value.toFixed(2);
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const state = dragState.current;
+    if (!state) return;
+    const sensitivity = range / 150;
+    commit(state.startValue + (state.startY - event.clientY) * sensitivity);
+  };
+
+  const endDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragState.current = null;
+    setDragging(false);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const coarse = range / 10;
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight':
+        event.preventDefault();
+        commit(value + step);
+        break;
+      case 'ArrowDown':
+      case 'ArrowLeft':
+        event.preventDefault();
+        commit(value - step);
+        break;
+      case 'PageUp':
+        event.preventDefault();
+        commit(value + coarse);
+        break;
+      case 'PageDown':
+        event.preventDefault();
+        commit(value - coarse);
+        break;
+      case 'Home':
+        event.preventDefault();
+        onChange(min);
+        break;
+      case 'End':
+        event.preventDefault();
+        onChange(max);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleDoubleClick = () => {
+    if (defaultValue !== undefined) onChange(clamp(defaultValue, min, max));
+  };
+
+  const display = formatValue(value, step);
+  const valueText = `${display}${unit}`;
 
   return (
     <div className="flex flex-col items-center gap-0.5 select-none">
-      <div className="text-[8px] uppercase tracking-wider opacity-60" style={{ color }}>
+      <span id={`${label.replace(/\s+/g, '-')}-label`} className="sr-only">
         {label}
-      </div>
+      </span>
       <div
-        className="relative w-10 h-10 sm:w-12 sm:h-12 cursor-grab active:cursor-grabbing"
+        role="slider"
+        tabIndex={0}
+        aria-label={label}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={Number(value.toFixed(4))}
+        aria-valuetext={valueText}
+        className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white/40 cursor-grab ${
+          dragging ? 'cursor-grabbing' : ''
+        }`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onKeyDown={handleKeyDown}
+        onDoubleClick={handleDoubleClick}
+        title={`${label}: ${valueText}`}
       >
-        {/* Outer ring */}
-        <svg viewBox="0 0 48 48" className="w-full h-full">
-          {/* Background arc */}
+        <svg viewBox="0 0 48 48" className="w-full h-full" aria-hidden="true">
           <circle
-            cx="24" cy="24" r="20"
+            cx="24"
+            cy="24"
+            r="20"
             fill="none"
             stroke="#1a1a2e"
             strokeWidth="3"
-            strokeDasharray={`${270 * Math.PI * 20 / 360} ${90 * Math.PI * 20 / 360}`}
-            strokeDashoffset={0}
-            transform="rotate(135 24 24)"
             strokeLinecap="round"
           />
-          {/* Value arc */}
           <circle
-            cx="24" cy="24" r="20"
+            cx="24"
+            cy="24"
+            r="20"
             fill="none"
             stroke={color}
             strokeWidth="3"
-            strokeDasharray={`${percent * Math.PI * 20 / 100} ${(270 - percent * 270 / 100) * Math.PI * 20 / 360 + 90 * Math.PI * 20 / 360}`}
-            strokeDashoffset={0}
-            transform="rotate(135 24 24)"
             strokeLinecap="round"
-            opacity={0.8}
+            pathLength={100}
+            strokeDasharray={`${percent} ${100 - percent}`}
+            transform="rotate(-135 24 24)"
+            opacity={0.85}
             style={{ filter: `drop-shadow(0 0 3px ${color})` }}
           />
-          {/* Indicator line */}
           <line
-            x1="24" y1="24"
+            x1="24"
+            y1="24"
             x2={24 + 14 * Math.sin((angle * Math.PI) / 180)}
             y2={24 - 14 * Math.cos((angle * Math.PI) / 180)}
             stroke={color}
             strokeWidth="2"
             strokeLinecap="round"
           />
-          {/* Center dot */}
           <circle cx="24" cy="24" r="3" fill={color} opacity={0.5} />
         </svg>
       </div>
-      <div className="text-[9px] font-mono" style={{ color }}>
-        {displayValue}{unit}
+      <div className="text-[8px] uppercase tracking-wider opacity-60 font-mono" style={{ color }}>
+        {label}
+      </div>
+      <div className="text-[9px] font-mono tabular-nums" style={{ color }} aria-hidden="true">
+        {display}
+        {unit}
       </div>
     </div>
   );
